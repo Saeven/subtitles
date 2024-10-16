@@ -122,4 +122,28 @@ TEXT;
         $vttContent = file_get_contents('./tests/files/garbage.vtt');
         (new Subtitles())->load($vttContent, 'vtt')->getInternalFormat();
     }
+
+    public function testShortTimeFormat()
+    {
+        $expected = [
+            [
+                'start' => 1.71,
+                'end' => 3.17,
+                'lines' => ["Hi, I'm Anna, and I'm here to help."],
+            ],
+            [
+                'start' => 4.19,
+                'end' => 9.03,
+                'lines' => ["Here, we know it can be challenging to stay on top of all your payments when there are competing"],
+            ],
+            [
+                'start' => 9.03,
+                'end' => 10.13,
+                'lines' => ["demands for your money."],
+            ],
+        ];
+
+        $internalformat = Subtitles::load(file_get_contents('./tests/files/vtt_short_times.vtt'), 'vtt')->getInternalFormat();
+        $this->assertInternalFormatsEqual($expected, $internalformat);
+    }
 }
