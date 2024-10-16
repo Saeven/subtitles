@@ -97,11 +97,30 @@ class VttConverter implements ConverterInterface
 
     /**
      * 00:00:00.500 --> xx.yyy
+     *
+     * @throws InvalidTimeFormatException
      */
     public function toInternalTimeFormat(string $subtitleFormat): float
     {
-        if (preg_match('/^(?<hours>\\d{2,5}):(?<minutes>\\d{2}):(?<seconds>\\d{2}).(?<fraction>\\d{3})$/us', $subtitleFormat, $matches) === false) {
+        $matchResult = preg_match('/^(?<hours>\\d{2,5}):(?<minutes>\\d{2}):(?<seconds>\\d{2}).(?<fraction>\\d{3})$/us', $subtitleFormat, $matches);
+        if ($matchResult === false) {
             throw new InvalidTimeFormatException($subtitleFormat);
+        }
+
+        // could it have been a short-time format?
+        if ($matchResult === 0) {
+            $matchResult = preg_match('/^(?<minutes>\\d{2}):(?<seconds>\\d{2}).(?<fraction>\\d{3})$/us', $subtitleFormat, $matches);
+            if ($matchResult === false) {
+                throw new InvalidTimeFormatException($subtitleFormat);
+            }
+        }
+
+        if ($matchResult === 0) {
+            throw new InvalidTimeFormatException($subtitleFormat);
+        }
+
+        if (!isset($matches['hours'])) {
+            $matches['hours'] = 0;
         }
 
         return (int) $matches['hours'] * ConstantsInterface::HOURS_SECONDS
