@@ -10,6 +10,25 @@ Convert and edit subtitles and captions.
 | [WebVTT](https://en.wikipedia.org/wiki/WebVTT)                                                        | .vtt      |
 | [Youtube Subtitles](https://webdev-il.blogspot.lt/2010/01/sbv-file-format-for-youtube-subtitles.html) | .sbv      |
 
+### WebVTT cue settings
+
+WebVTT timing lines support the `align`, `line`, `position`, `size`, `vertical`, and `region` cue settings.
+Settings are validated against the [WebVTT cue setting syntax](https://www.w3.org/TR/webvtt1/#webvtt-cue-settings)
+and preserved when writing VTT, including after shifting cue times. Spaces and tabs are accepted as separators.
+For example:
+
+```vtt
+WEBVTT
+
+00:00:00.976 --> 00:00:03.904 align:center line:90%
+[MUSIC PLAYING]
+```
+
+Validation uses the current authoring syntax: `align:middle` is rejected; use `align:center` instead.
+Unknown or repeated settings, invalid values, and percentages outside 0–100 are also rejected.
+Empty cues are validated and then omitted. Converting to SRT or SBV retains timing and text but omits VTT settings.
+This support covers settings on cue timing lines; it does not add support for `REGION` or `STYLE` definition blocks.
+
 ## Installation
 
 ```
@@ -135,6 +154,7 @@ Array
 [start] - when to start showing text (float - seconds)
 [end] - when to stop showing text (float -seconds)
 [lines] - one or more text lines (array)
+[settings] - optional validated WebVTT cue settings (string, present only when nonempty)
 ```
 
 ## Running Tests
